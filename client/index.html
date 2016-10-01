@@ -1,113 +1,33 @@
 <!DOCTYPE html>
 <html>
-<link rel=stylesheet href="css/hoge.css"/>
-<script   src="https://code.jquery.com/jquery-2.2.4.min.js"   integrity="sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44="   crossorigin="anonymous"></script>
+<script src="js/util.js"></script>
+<script src="js/api.js"></script>
 <script>
-var DB = {
-	get:function() {
-		return new Promise(function(resolve,reject) {
-			var req = new XMLHttpRequest();
-			req.open("get","/api/?cmd=getall",true) ;
-			req.responseType = "json" ;
-			req.onload = function() {
-				if(req.status==200) {
-					resolve(req.response) ;
-				} else {
-					reject(req.status) ;					
-				}
-			}
-			req.send() ;
-		})
-	},
-	post:function(f) {
-		return new Promise(function(resolve,reject) {
-			var req = new XMLHttpRequest();
-			req.open("post","/api/?cmd=post",true) ;
-			req.responseType = "json" ;
-			req.setRequestHeader("Content-Type","text/json;charset=UTF-8");
-			req.onload = function() {
-				if(req.status==200) {
-					resolve(req.response) ;
-				} else {
-					reject(req.status) ;					
-				}
-			}
-			req.send(f) ;
-		})
-	},
-	upload:function(name,data) {
-		return new Promise(function(resolve,reject) {
-			var req = new XMLHttpRequest();
-			req.open("post","/upload/?name="+name,true) ;
-			req.responseType = "json" ;
-			req.onload = function() {
-				if(req.status==200) {
-					resolve(req.response) ;
-				} else {
-					reject(req.status) ;					
-				}
-			}
-			req.upload.addEventListener("progress", function(ev){
-				console.log((ev.loaded/ev.total)*100) ;
-			},false);
-//			var dv = new DataView(data) ;
-			console.log("send start") ;
-			req.send(data) ;
-		})
-	}
-}
-function $$(q){
-	if(q.substr(0,1)=="#") {
-		return document.getElementById(q.substr(1));
-	} else {
-		return document.querySelectorAll(q);
-	}
-}
-function $E(q,ev,f){
-	var e = $$(q) ;
-	e.addEventListener(ev,f);
-	return e ;
-}
-function $A(q,a,v){
-	var el = $$(q) ;
-	e.setAttribute(a,v);
-	return e ;
-}
-function $C(q,a,v){
-	var at = [] ;
-	var el = $$(q) ;
-	Array.prototype.forEach.call(el,function(e){
-		if(v) e.style[a] = v ;
-		else at.push(e.style[a]) ;		
-	})
-	return (v)?el:at ;
-}
 onload = function() {
-	DB.get().then(function(data) {
+	API.get().then(function(data) {
 		console.log(data) ;
 	}).catch(function(err) {
 		console.log(err) ;
 	})
-	$C("input[type=text]","color","#f88") ;
 	
-	$E('#send','click',function(e) {
+	$I('#send').$E('click',function(e) {
 		e.preventDefault() ;
 		
 		var f = new FormData($$('#f0')) ;
 		console.log(f) ;
 		var data = {'tt':$$('input[name=tt]')[0].value,'t2':$$('textarea[name=t2]')[0].value}; 
-		DB.post(JSON.stringify(data)).then(function(res) {
+		API.post(JSON.stringify(data)).then(function(res) {
 			console.log("posted") ;
 			console.log(res) ;
 		});
 		return false ;
 	})
 	
-	$E('#drop','dragover',function(e){
+	$I('#drop').$E('dragover',function(e){
 		e.preventDefault();
 		return false ;
 	});
-	$E('#drop','drop',function(e){
+	$I('#drop').$E('drop',function(e){
 		e.preventDefault();
 		console.log("drop") ;
 
@@ -120,7 +40,7 @@ onload = function() {
 			var reader = new FileReader() ;
 			reader.onload = function(e) {
 				console.log(f.name) ;
-				DB.upload((f.name),f).then(function(res){
+				API.upload((f.name),f).then(function(res){
 					console.log("uploaded");
 					console.log(res) ;
 				})
@@ -131,9 +51,9 @@ onload = function() {
 	});
 }
 </script>
+<link rel=stylesheet href="css/uploader.css"/>
 <body id=drop>
 <h1>HOGE</h1>
-<img src="img/nc.jpg" />
 <form method="post" action="/api/"  id=f0>
 <input type="text" name=tt>
 <textarea name=t2></textarea>

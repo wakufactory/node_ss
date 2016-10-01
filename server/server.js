@@ -1,17 +1,19 @@
+"use strict";
 var http = require('http');
 var url = require('url') ;
 var fs = require('fs') ;
-var settings = require('./settings.js') ;
 
 function log(str) {
 	console.log(str) ;
 } 
 
+exports.start = function(opt) {
+
 http.createServer((req, res) => {
 	log("request "+req.url) ;
 	let url_parts = url.parse(req.url,true);
 
-	//レスポンスのJSONを返す
+	//return response JSON
 	function retresp(res,data) {
 		let r = JSON.stringify(data) ;
 		res.writeHead(200, {'Content-Type':'text/json;charset=UTF-8',
@@ -22,12 +24,12 @@ http.createServer((req, res) => {
 	if(url_parts.pathname=="/api/") {
 		log("api") ;
 		log(url_parts.query) ;
-		//GETの時
+		//GET
 		if(req.method=='GET') {
-			api({"GET":url_parts.query},(ret) => {
+			opt.api_callback({"GET":url_parts.query},(ret) => {
 				retresp(res,ret) ;	
 			}) ;
-		//POSTの時
+		//POST
 		} else if(req.method=='POST') {
 			let data = "" ;
 			req.on("readable",()=> {
@@ -40,26 +42,28 @@ http.createServer((req, res) => {
 				log("post end") ;
 				let p = JSON.parse(data);
 				log(p) ; 
-				api({"POST":p,"GET":url_parts.query},(ret)=> {
+				opt.api_callback({"POST":p,"GET":url_parts.query},(ret)=> {
 					retresp(res,ret);
 				})
 			})				
 		}
-	//ファイルアップロードAPI
+	//file upload API
 	} else if(req.method=='POST' && url_parts.pathname=="/upload/"){
-		let fn = settings.updir+url_parts.query.name ;
-		let fp = fs.createWriteStream(fn) ;
+		
+		let fn = opt.upload_path(url_parts.query) ;
+		let fp = fs.createWriteStream(__dirname+"/"+fn) ;
 		req.pipe(fp) ;
 		log("save to "+fn) ;
 
 		req.on("end",()=>{
 			log("upload end") ;
-			let r = '{"status":0}' ;
-			retresp(res,r) ;
+			opt.upload_callback(url_parts.query,(ret)=>{
+				retresp(res,ret) ;				
+			})
 		})
-//API以外のファイル送信処理
+//file transfer
 	} else {
-		fs.readFile('.'+url_parts.pathname.replace("..",""),(err,text)=> {
+		fs.readFile(__dirname+"/"+opt.docroot+url_parts.pathname.replace("..",""),(err,text)=> {
 			if(!err) {
 				let ext ="" ;
 				if(url_parts.pathname.match(/\.([^.]+)$/)) {
@@ -76,9 +80,6 @@ http.createServer((req, res) => {
 			}
 		});			
 	}
-}).listen(settings.port, settings.server);
-
-//APIの実装
-function api(q,cb) {
-	cb(q) ;
+}).listen(opt.port, opt.address);
+log("server started") ;
 }
