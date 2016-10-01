@@ -1,8 +1,17 @@
 var API = {
-	get:function() {
+	_param:function(p) {
+		if(!p) return "" ;
+		var s = [] ;
+		for(var i in p ){
+			s.push( i+"="+encodeURIComponent(p[i])) ;
+		}
+		console.log(s) ;
+		return "?"+s.join("&") ;
+	},
+	get:function(p) {
 		return new Promise(function(resolve,reject) {
 			var req = new XMLHttpRequest();
-			req.open("get","/api/?cmd=getall",true) ;
+			req.open("get","/api/"+API._param(p),true) ;
 			req.responseType = "json" ;
 			req.onload = function() {
 				if(req.status==200) {
@@ -14,10 +23,10 @@ var API = {
 			req.send() ;
 		})
 	},
-	post:function(f) {
+	post:function(p,f) {
 		return new Promise(function(resolve,reject) {
 			var req = new XMLHttpRequest();
-			req.open("post","/api/?cmd=post",true) ;
+			req.open("post","/api/"+API._param(p),true) ;
 			req.responseType = "json" ;
 			req.setRequestHeader("Content-Type","text/json;charset=UTF-8");
 			req.onload = function() {
@@ -30,10 +39,10 @@ var API = {
 			req.send(f) ;
 		})
 	},
-	upload:function(name,data) {
+	upload:function(p,data,prog) {
 		return new Promise(function(resolve,reject) {
 			var req = new XMLHttpRequest();
-			req.open("post","/upload/?name="+name,true) ;
+			req.open("post","/upload/"+API._param(p),true) ;
 			req.responseType = "json" ;
 			req.onload = function() {
 				if(req.status==200) {
@@ -42,10 +51,7 @@ var API = {
 					reject(req.status) ;					
 				}
 			}
-			req.upload.addEventListener("progress", function(ev){
-				console.log((ev.loaded/ev.total)*100) ;
-			},false);
-//			var dv = new DataView(data) ;
+			if(prog) req.upload.addEventListener("progress", prog,false);
 			console.log("send start") ;
 			req.send(data) ;
 		})

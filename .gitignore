@@ -1,2 +1,3 @@
 client/updata/*
+!.gitkeep
 .DS_Store

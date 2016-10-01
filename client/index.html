@@ -1,63 +1,90 @@
 <!DOCTYPE html>
 <html>
-<script src="js/util.js"></script>
 <script src="js/api.js"></script>
 <script>
+function $$(q){	return document.querySelectorAll(q);}
+function $I(q){	return document.getElementById(q);}
+function NFC(name) { if(name.normalize) name =  name.normalize('NFC') ; return name ;}
+
 onload = function() {
-	API.get().then(function(data) {
+	API.get({"cmd":"list"}).then(function(data) {
 		console.log(data) ;
 	}).catch(function(err) {
 		console.log(err) ;
 	})
-	
-	$I('#send').$E('click',function(e) {
-		e.preventDefault() ;
-		
-		var f = new FormData($$('#f0')) ;
-		console.log(f) ;
-		var data = {'tt':$$('input[name=tt]')[0].value,'t2':$$('textarea[name=t2]')[0].value}; 
-		API.post(JSON.stringify(data)).then(function(res) {
+
+	var f ;
+	$I('send').addEventListener('click',function(e) {
+		var data = {
+			'fname':$I('f_fn').value,
+			'title':$I('f_title').value,
+			'desc':$I('f_desc').value
+		}; 
+		API.post({"cmd":"saveinfo"},JSON.stringify(data)).then(function(res) {
 			console.log("posted") ;
 			console.log(res) ;
 		});
-		return false ;
+		API.upload({'fname':$I('f_fn').value},f,function(ev){
+			console.log((ev.loaded/ev.total)*100) ;
+		}).then(function(res){
+			console.log("uploaded");
+			console.log(res) ;
+		})
 	})
 	
-	$I('#drop').$E('dragover',function(e){
+	$I('droparea').addEventListener('dragover',function(e){
 		e.preventDefault();
-		return false ;
+		this.setAttribute("data-over",1) ;
 	});
-	$I('#drop').$E('drop',function(e){
+	$I('droparea').addEventListener('dragleave',function(e){
 		e.preventDefault();
-		console.log("drop") ;
-
-		var tmp = (e.dataTransfer.files) ;
+		this.setAttribute("data-over",0) ;
+	});
+	$I('droparea').addEventListener('drop',function(e){
+		e.preventDefault();
+		this.setAttribute("data-over",0) ;
+		var tmp = e.dataTransfer.files ;
 		if(!tmp.length) return false ;
-		
-		var files = Array.prototype.slice.call(tmp, 0, tmp.length);
-		console.log(files) ;
-		files.forEach(function(f){
-			var reader = new FileReader() ;
-			reader.onload = function(e) {
-				console.log(f.name) ;
-				API.upload((f.name),f).then(function(res){
-					console.log("uploaded");
-					console.log(res) ;
-				})
-			}
-			reader.readAsArrayBuffer(f) ;
-		})
-		return false ;
+		f = tmp[0] ;
+		$I('f_fn').value = NFC(f.name) ;
+		var reader = new FileReader() ;
+		reader.onload = function(e) {
+			$I('imgpv').setAttribute("src", e.target.result) ;
+		}
+		reader.readAsDataURL(f) ;
 	});
 }
 </script>
 <link rel=stylesheet href="css/uploader.css"/>
+<style>
+#droparea {
+	position:relative ;
+	width:10rem ;
+	height:10rem;
+	border:2px solid black ;
+	text-align:center ;
+	line-height:10rem ;
+}
+#droparea[data-over="1"] {
+	border:2px solid red ;
+}
+#imgpv {
+	position:absolute ;
+	left:0 ;
+	max-width:10rem ;
+}
+button {
+	font-size:1.5rem ;
+}
+</style>
 <body id=drop>
-<h1>HOGE</h1>
-<form method="post" action="/api/"  id=f0>
-<input type="text" name=tt>
-<textarea name=t2></textarea>
+<h1>Image Uploader</h1>
+<div id=droparea><img src="" id=imgpv />drop image here</div>
+<br/>
+filename:<input type="text" id=f_fn><br/>
+title:<input type="text" id=f_title><br/>
+description:<br/>
+<textarea id=f_desc></textarea><br/>
 <button id=send>send</button>
-</form>
 </body>
 </html>

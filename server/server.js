@@ -10,8 +10,10 @@ function log(str) {
 exports.start = function(opt) {
 
 http.createServer((req, res) => {
-	log("request "+req.url) ;
+	var d = new Date() ;
+	log(d.toLocaleString()+" "+req.url) ;
 	let url_parts = url.parse(req.url,true);
+	let query = url_parts.query ;
 
 	//return response JSON
 	function retresp(res,data) {
@@ -20,13 +22,13 @@ http.createServer((req, res) => {
 			"Content-Length":Buffer.byteLength(r, 'utf-8')});
 		res.end(r);			
 	}
-//API処理
+//API process
 	if(url_parts.pathname=="/api/") {
 		log("api") ;
-		log(url_parts.query) ;
+		log(query) ;
 		//GET
 		if(req.method=='GET') {
-			opt.api_callback({"GET":url_parts.query},(ret) => {
+			opt.api_callback({"GET":query},(ret) => {
 				retresp(res,ret) ;	
 			}) ;
 		//POST
@@ -42,7 +44,7 @@ http.createServer((req, res) => {
 				log("post end") ;
 				let p = JSON.parse(data);
 				log(p) ; 
-				opt.api_callback({"POST":p,"GET":url_parts.query},(ret)=> {
+				opt.api_callback({"POST":p,"GET":query},(ret)=> {
 					retresp(res,ret);
 				})
 			})				
@@ -50,20 +52,20 @@ http.createServer((req, res) => {
 	//file upload API
 	} else if(req.method=='POST' && url_parts.pathname=="/upload/"){
 		
-		let fn = opt.upload_path(url_parts.query) ;
-		let fp = fs.createWriteStream(__dirname+"/"+fn) ;
+		let fn = opt.upload_path(query) ;
+		let fp = fs.createWriteStream(fn) ;
 		req.pipe(fp) ;
 		log("save to "+fn) ;
 
 		req.on("end",()=>{
 			log("upload end") ;
-			opt.upload_callback(url_parts.query,(ret)=>{
+			opt.upload_callback({"GET":query},(ret)=>{
 				retresp(res,ret) ;				
 			})
 		})
 //file transfer
 	} else {
-		fs.readFile(__dirname+"/"+opt.docroot+url_parts.pathname.replace("..",""),(err,text)=> {
+		fs.readFile(__dirname+"/"+opt.docroot+url_parts.pathname.replace("..",""),(err,data)=> {
 			if(!err) {
 				let ext ="" ;
 				if(url_parts.pathname.match(/\.([^.]+)$/)) {
@@ -73,7 +75,7 @@ http.createServer((req, res) => {
 				let mimes = {'js':"text/javascript",'css':"text/css",'jpg':"image/jpeg",'jpeg':"image/jpeg",'png':"image/png"} ;
 				if(mimes[ext]) mime = mimes[ext] ;
 				res.writeHead(200, {'Content-Type': mime,'Cache-Control':"public"});
-				res.end(text) ;					
+				res.end(data) ;					
 			}else {
 				res.writeHead(404);	
 				res.end("404");				
@@ -81,5 +83,6 @@ http.createServer((req, res) => {
 		});			
 	}
 }).listen(opt.port, opt.address);
+
 log("server started") ;
 }
