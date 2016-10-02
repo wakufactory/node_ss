@@ -1,0 +1,66 @@
+html {
+	font-size:32px ;
+	line-height:1em ;
+}
+body {
+	font-size:0.5rem ;
+	font-family:sans-serif ;
+}
+div {
+	box-sizing: border-box ;
+}
+h1 {
+	font-size:0.8rem ;
+	height:1rem ;
+	margin:0.5rem 0 ;
+}
+#droparea {
+	position:relative ;
+	width:5rem ;
+	height:4rem;
+	border:2px solid black ;
+	text-align:center ;
+	line-height:4rem ;
+	margin-left:2rem ;
+}
+#droparea[data-over="1"] {
+	border:2px solid red ;
+}
+#imgpv {
+	position:absolute ;
+	left:0 ;
+	max-width:5rem ;
+	max-height:4rem ;
+
+}
+#progbar {
+	height:0.3rem ;
+	width:6rem ;
+	border:1px solid black ;
+	margin-left:3rem ;
+	margin-top:calc(-1rem + 0.3rem) ;
+}
+#progbar div {
+	background-color:#888 ;
+	width:0% ;
+	height:100% ;
+}
+button {
+	font-size:0.5rem ;
+}
+input,select,textarea {
+	font-size:0.5rem ;
+}
+form dd {
+	margin-left:3rem ;
+	margin-top:-1rem ;
+}
+input[type=text] {
+	width:6rem ;
+}
+input[type=file] {
+	width:9rem ;
+}
+textarea {
+	width:9rem ;
+}

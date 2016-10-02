@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width"/>
+<title>simple node server demo</title>
 <script src="js/api.js"></script>
 <script>
 function $$(q){	return document.querySelectorAll(q);}
@@ -8,6 +10,7 @@ function $I(q){	return document.getElementById(q);}
 function NFC(name) { if(name.normalize) name =  name.normalize('NFC') ; return name ;}
 
 onload = function() {
+	//get image list
 	API.get({"cmd":"list"}).then(function(data) {
 		console.log(data) ;
 	}).catch(function(err) {
@@ -18,13 +21,16 @@ onload = function() {
 	$I('send').addEventListener('click',function(e) {
 		if(!upfile) return ;
 
+		//get JSON data from forms
 		var data = API.formJSON( $I("f") ) ;
 		console.log(data) ;
-//return ;
+
+		//post and upload api call
 		var p = API.post({"cmd":"saveinfo"},JSON.stringify(data));
 		var u = API.upload({'fname':data.fname},upfile,function(ev){
 			//progress callback
 			console.log((ev.loaded/ev.total)*100) ;
+			$$('#progbar div')[0].style["width"] = (ev.loaded/ev.total*100)+"%" ;
 		})
 		Promise.all([p,u]).then(function(m) {
 			console.log(m) ;
@@ -32,12 +38,14 @@ onload = function() {
 		}) ;
 	})
 	
+	//image preview
 	function previmg(f) {
 		console.log(f) ;
 		if(!f.type.match(/^image/)) return false ;
 		upfile = f ;
 		$I('imgpv').setAttribute("src","");
 		$$('input[name=fname]')[0].value = NFC(f.name) ;
+		$$('#progbar div')[0].style["width"] = "0%" ; 
 		var reader = new FileReader() ;
 		reader.onload = function(e) {
 			$I('imgpv').setAttribute("src", e.target.result) ;
@@ -48,7 +56,6 @@ onload = function() {
 	$I('f_sel').addEventListener("change",function(e){
 		previmg(e.target.files[0]) ;
 	})
-	
 	$I('droparea').addEventListener('dragover',function(e){
 		e.preventDefault();
 		this.setAttribute("data-over",1) ;
@@ -67,46 +74,21 @@ onload = function() {
 }
 </script>
 <link rel=stylesheet href="css/uploader.css"/>
-<style>
-#droparea {
-	position:relative ;
-	width:10rem ;
-	height:10rem;
-	border:2px solid black ;
-	text-align:center ;
-	line-height:10rem ;
-}
-#droparea[data-over="1"] {
-	border:2px solid red ;
-}
-#imgpv {
-	position:absolute ;
-	left:0 ;
-	max-width:10rem ;
-	max-height:10rem ;
-
-}
-button {
-	font-size:1.5rem ;
-}
-input,select,textarea {
-	font-size:1rem ;
-}
-</style>
 <body>
 <h1>Image Uploader</h1>
 <div id=droparea><img src="" id=imgpv />drop image here</div>
-<br/>
 <input type=file id=f_sel /><br/>
 <form id=f>
-filename:<input type="text" name=fname><br/>
-title:<input type="text" name=title><br/>
-check:<input type=checkbox value="hoge" name=c1>あ <input type=checkbox value="hage" name=c1>い <br/>
-radio:<input type=radio name=r1 value="A">A <input type=radio name=r1 value="B">B<br/>
-select:<select name=s1><option value=1>1</option><option>2</option><option>3</option></select><br>
+<dt>filename:</dt><dd><input type="text" name=fname></dd>
+<dt>title:</dt><dd><input type="text" name=title></dd>
+<dt>check:</dt>
+<dd><input type=checkbox value="hoge" name=c1>hoge <input type=checkbox value="hage" name=c1>hage </dd>
+<dt>radio:</dt><dd><input type=radio name=r1 value="A">A <input type=radio name=r1 value="B">B</dd>
+<dt>select:</dt>
+<dd><select name=s1><option value=1>select1</option><option value=2>select2</option><option value=3>select3</option></select></dd>
 description:<br/>
 <textarea name=desc></textarea><br/>
 </form>
-<button id=send>send</button>
+<button id=send>SEND</button><div id=progbar><div></div></div>
 </body>
 </html>
