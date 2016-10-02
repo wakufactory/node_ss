@@ -10,13 +10,22 @@ function $I(q){	return document.getElementById(q);}
 function NFC(name) { if(name.normalize) name =  name.normalize('NFC') ; return name ;}
 
 onload = function() {
+	
+	getlist() ;
 	//get image list
-	API.get({"cmd":"list"}).then(function(data) {
-		console.log(data) ;
-	}).catch(function(err) {
-		console.log(err) ;
-	})
-
+	function getlist() {
+		API.get({"cmd":"list"}).then(function(data) {
+			console.log(data) ;
+			var l = [] ;
+			for( var i in data) {
+				var f = data[i] ;
+				l.push( `<li><a href="updata/${f.fname}" target="_blank">${f.title} (${f.fname})</a></li>`) ;
+			}
+			$I('list').innerHTML = `<ul class=list>${l.join("\n")}</ul>` ;
+		}).catch(function(err) {
+			console.log(err) ;
+		})
+	}
 	var upfile = null ;
 	$I('send').addEventListener('click',function(e) {
 		if(!upfile) return ;
@@ -29,12 +38,12 @@ onload = function() {
 		var p = API.post({"cmd":"saveinfo"},JSON.stringify(data));
 		var u = API.upload({'fname':data.fname},upfile,function(ev){
 			//progress callback
-			console.log((ev.loaded/ev.total)*100) ;
 			$$('#progbar div')[0].style["width"] = (ev.loaded/ev.total*100)+"%" ;
 		})
 		Promise.all([p,u]).then(function(m) {
 			console.log(m) ;
 			console.log("all complete") ;
+			getlist() ;
 		}) ;
 	})
 	
@@ -75,6 +84,8 @@ onload = function() {
 </script>
 <link rel=stylesheet href="css/uploader.css"/>
 <body>
+<div id=base>
+<div class=block id=left>
 <h1>Image Uploader</h1>
 <div id=droparea><img src="" id=imgpv />drop image here</div>
 <input type=file id=f_sel /><br/>
@@ -90,5 +101,11 @@ description:<br/>
 <textarea name=desc></textarea><br/>
 </form>
 <button id=send>SEND</button><div id=progbar><div></div></div>
+</div>
+<div class=block id=right>
+<h2>upload image list</h2>
+<div id=list></div>
+</div>
+</div>
 </body>
 </html>

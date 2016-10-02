@@ -9,10 +9,33 @@ body {
 div {
 	box-sizing: border-box ;
 }
+#base {
+	display:flex ;
+}
+div.block {
+	width:calc(10rem - 4px);
+	height:16rem ;
+	overflow-y:scroll ;
+	overflow-x:hidden ;
+}
+ @media (max-width: 640px) {
+	 body {
+		 margin:2px ;
+		 padding:0 ;
+	 }
+	 #base {
+		 flex-direction:column ;
+	 }
+ }
 h1 {
 	font-size:0.8rem ;
 	height:1rem ;
 	margin:0.5rem 0 ;
+}
+h2 {
+	font-size:0.5rem ;
+	height:1rem ;
+	margin:0.25rem 0 ;
 }
 #droparea {
 	position:relative ;
@@ -29,8 +52,8 @@ h1 {
 #imgpv {
 	position:absolute ;
 	left:0 ;
-	max-width:5rem ;
-	max-height:4rem ;
+	max-width:calc(5rem - 4px) ;
+	max-height:calc(4rem - 4px) ;
 
 }
 #progbar {
@@ -44,6 +67,11 @@ h1 {
 	background-color:#888 ;
 	width:0% ;
 	height:100% ;
+}
+#list ul {
+	list-style:none ;
+	margin:0 ;
+	padding-left:0.25rem ;
 }
 button {
 	font-size:0.5rem ;
@@ -63,4 +91,5 @@ input[type=file] {
 }
 textarea {
 	width:9rem ;
+	height:1rem ;
 }
