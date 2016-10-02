@@ -25,13 +25,16 @@ function api(q,cb) {
 			}
 			break ;
 		case "list":
-			fs.readdir(__dirname+"/"+updir, function(err,data) {
+			var dir = __dirname+"/"+updir ;
+			fs.readdir(dir, function(err,data) {
 				ret = [] ;
 				data.forEach(function(f) {
 					if(f.substr(0,1)==".") return ;
-					ret.push(f) ;
+					if(f.match(/json$/)) {
+						ret.push(JSON.parse(fs.readFileSync(dir+"/"+f))) ; 
+					}
 				})
-				cb(ret.sort()) ;
+				cb(ret) ;
 			})
 			break ;
 		default:

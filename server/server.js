@@ -65,14 +65,15 @@ http.createServer((req, res) => {
 		})
 //file transfer
 	} else {
-		fs.readFile(__dirname+"/"+opt.docroot+url_parts.pathname.replace("..",""),(err,data)=> {
+		var pn = decodeURI(url_parts.pathname).replace("..","") ;
+		fs.readFile(__dirname+"/"+opt.docroot+pn,(err,data)=> {
 			if(!err) {
 				let ext ="" ;
-				if(url_parts.pathname.match(/\.([^.]+)$/)) {
-					ext = RegExp.$1 ;
+				if(pn.match(/\.([^.]+)$/)) {
+					ext = RegExp.$1.toLowerCase() ;
 				}
 				let mime ="text/html" ;
-				let mimes = {'js':"text/javascript",'css':"text/css",'jpg':"image/jpeg",'jpeg':"image/jpeg",'png':"image/png"} ;
+				let mimes = {'js':"text/javascript",'css':"text/css",'jpg':"image/jpeg",'jpeg':"image/jpeg",'png':"image/png",'gif':"image/gif"} ;
 				if(mimes[ext]) mime = mimes[ext] ;
 				res.writeHead(200, {'Content-Type': mime,'Cache-Control':"public"});
 				res.end(data) ;					
