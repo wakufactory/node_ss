@@ -1,7 +1,7 @@
 "use strict";
 var server = require('./server.js') ;
 var fs = require('fs') ;
-//サーバ起動
+//start server
 server.start({
 	"address":"127.0.0.1",
 	"port":8080,
@@ -11,7 +11,7 @@ server.start({
 	"upload_callback":uploaded
 }) ;
 
-//APIの実装
+//API implementation
 function api(q,cb) {
 	var ret ;
 	switch(q.GET.cmd) {
@@ -35,12 +35,12 @@ function api(q,cb) {
 	}
 }
 
-//アップロードファイルパスの決定
+//return upload file path
 var updir = "../client/updata" ;
 function upload_path(q) {
 	return __dirname+"/"+updir+"/"+q.fname ;
 }
-//アップロード終了時処理
+//upload finished
 function uploaded(q,cb) {
 	cb({"stat":0,"file":updir+"/"+q.GET.fname }) ;
 }

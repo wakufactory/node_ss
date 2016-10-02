@@ -15,16 +15,15 @@ onload = function() {
 
 	var f ;
 	$I('send').addEventListener('click',function(e) {
-		var data = {
-			'fname':$I('f_fn').value,
-			'title':$I('f_title').value,
-			'desc':$I('f_desc').value
-		}; 
+
+		var data = API.formJSON( $I("f") ) ;
+		console.log(data) ;
+
 		API.post({"cmd":"saveinfo"},JSON.stringify(data)).then(function(res) {
 			console.log("posted") ;
 			console.log(res) ;
 		});
-		API.upload({'fname':$I('f_fn').value},f,function(ev){
+		API.upload({'fname':data.fname},f,function(ev){
 			console.log((ev.loaded/ev.total)*100) ;
 		}).then(function(res){
 			console.log("uploaded");
@@ -46,7 +45,7 @@ onload = function() {
 		var tmp = e.dataTransfer.files ;
 		if(!tmp.length) return false ;
 		f = tmp[0] ;
-		$I('f_fn').value = NFC(f.name) ;
+		$$('input[name=fname]')[0].value = NFC(f.name) ;
 		var reader = new FileReader() ;
 		reader.onload = function(e) {
 			$I('imgpv').setAttribute("src", e.target.result) ;
@@ -81,10 +80,15 @@ button {
 <h1>Image Uploader</h1>
 <div id=droparea><img src="" id=imgpv />drop image here</div>
 <br/>
-filename:<input type="text" id=f_fn><br/>
-title:<input type="text" id=f_title><br/>
+<form id=f>
+filename:<input type="text" name=fname><br/>
+title:<input type="text" name=title><br/>
+check:<input type=checkbox value="hoge" name=c1>あ <input type=checkbox value="hage" name=c1>い <br/>
+radio:<input type=radio name=r1 value="A">A <input type=radio name=r1 value="B">B<br/>
+select:<select name=s1><option>1</option><option>2</option><option>3</option></select><br>
 description:<br/>
-<textarea id=f_desc></textarea><br/>
+<textarea name=desc></textarea><br/>
+</form>
 <button id=send>send</button>
 </body>
 </html>
