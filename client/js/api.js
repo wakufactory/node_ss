@@ -62,10 +62,10 @@ var API = {
 		Array.prototype.forEach.call(fs,function(e) {
 			if(e.type=="radio"){
 				if(e.checked) ret[e.name] = e.value; 
-				else ret[e.name] = null ;
+				else if(ret[e.name]==undefined) ret[e.name] = null ;
 			} else if(e.type=="checkbox") {
-					if(!ret[e.name]) ret[e.name] = {} ;
-					ret[e.name][e.value] = e.checked ;
+				if(!ret[e.name]) ret[e.name] = {} ;
+				ret[e.name][e.value] = e.checked ;
 			} else {
 				ret[e.name] = e.value ;
 			}

@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html>
+<meta charset="UTF-8">
 <script src="js/api.js"></script>
 <script>
 function $$(q){	return document.querySelectorAll(q);}
@@ -13,22 +14,39 @@ onload = function() {
 		console.log(err) ;
 	})
 
-	var f ;
+	var upfile = null ;
 	$I('send').addEventListener('click',function(e) {
+		if(!upfile) return ;
 
 		var data = API.formJSON( $I("f") ) ;
 		console.log(data) ;
-
-		API.post({"cmd":"saveinfo"},JSON.stringify(data)).then(function(res) {
-			console.log("posted") ;
-			console.log(res) ;
-		});
-		API.upload({'fname':data.fname},f,function(ev){
+//return ;
+		var p = API.post({"cmd":"saveinfo"},JSON.stringify(data));
+		var u = API.upload({'fname':data.fname},upfile,function(ev){
+			//progress callback
 			console.log((ev.loaded/ev.total)*100) ;
-		}).then(function(res){
-			console.log("uploaded");
-			console.log(res) ;
 		})
+		Promise.all([p,u]).then(function(m) {
+			console.log(m) ;
+			console.log("all complete") ;
+		}) ;
+	})
+	
+	function previmg(f) {
+		console.log(f) ;
+		if(!f.type.match(/^image/)) return false ;
+		upfile = f ;
+		$I('imgpv').setAttribute("src","");
+		$$('input[name=fname]')[0].value = NFC(f.name) ;
+		var reader = new FileReader() ;
+		reader.onload = function(e) {
+			$I('imgpv').setAttribute("src", e.target.result) ;
+		}
+		reader.readAsDataURL(f) ;
+		return true ;		
+	}
+	$I('f_sel').addEventListener("change",function(e){
+		previmg(e.target.files[0]) ;
 	})
 	
 	$I('droparea').addEventListener('dragover',function(e){
@@ -42,15 +60,9 @@ onload = function() {
 	$I('droparea').addEventListener('drop',function(e){
 		e.preventDefault();
 		this.setAttribute("data-over",0) ;
-		var tmp = e.dataTransfer.files ;
-		if(!tmp.length) return false ;
-		f = tmp[0] ;
-		$$('input[name=fname]')[0].value = NFC(f.name) ;
-		var reader = new FileReader() ;
-		reader.onload = function(e) {
-			$I('imgpv').setAttribute("src", e.target.result) ;
-		}
-		reader.readAsDataURL(f) ;
+		var files = e.dataTransfer.files ;
+		if(!files.length) return false ;
+		previmg(files[0]) ;
 	});
 }
 </script>
@@ -71,21 +83,27 @@ onload = function() {
 	position:absolute ;
 	left:0 ;
 	max-width:10rem ;
+	max-height:10rem ;
+
 }
 button {
 	font-size:1.5rem ;
 }
+input,select,textarea {
+	font-size:1rem ;
+}
 </style>
-<body id=drop>
+<body>
 <h1>Image Uploader</h1>
 <div id=droparea><img src="" id=imgpv />drop image here</div>
 <br/>
+<input type=file id=f_sel /><br/>
 <form id=f>
 filename:<input type="text" name=fname><br/>
 title:<input type="text" name=title><br/>
 check:<input type=checkbox value="hoge" name=c1>あ <input type=checkbox value="hage" name=c1>い <br/>
 radio:<input type=radio name=r1 value="A">A <input type=radio name=r1 value="B">B<br/>
-select:<select name=s1><option>1</option><option>2</option><option>3</option></select><br>
+select:<select name=s1><option value=1>1</option><option>2</option><option>3</option></select><br>
 description:<br/>
 <textarea name=desc></textarea><br/>
 </form>

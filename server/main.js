@@ -26,7 +26,12 @@ function api(q,cb) {
 			break ;
 		case "list":
 			fs.readdir(__dirname+"/"+updir, function(err,data) {
-				cb(data) ;
+				ret = [] ;
+				data.forEach(function(f) {
+					if(f.substr(0,1)==".") return ;
+					ret.push(f) ;
+				})
+				cb(ret.sort()) ;
 			})
 			break ;
 		default:
