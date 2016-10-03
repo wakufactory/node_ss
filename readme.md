@@ -19,4 +19,4 @@
 simple image uploader 
 
  1. start server: node main.js
- 1. open browser: http://localhost:8080/
+ 1. open browser: http://localhost:8080/index.html
