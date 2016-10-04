@@ -6,11 +6,17 @@
  - API returns JSON format
  - POST API also receives JSON format 
  - File upload API receives raw file data
- 
+
+##require 
+
+ - node v4 or later 
+ - no extensions required
+
 ##modules
 
  - server/server.js : simple server module 
- - server/main.js : server main and API implement
+ - server/main.js : server main 
+ - server/api_s.js : API implement
  - client/index.html : sample web app page
  - clinet/js/api.js : API call class 
  

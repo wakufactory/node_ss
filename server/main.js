@@ -1,54 +1,16 @@
 "use strict";
 var server = require('./server.js') ;
-var fs = require('fs') ;
+var api = require('./api_s.js') ;
+
 //start server
 server.start({
 	"address":"127.0.0.1",
 	"port":8080,
 	"docroot":"../client/",
-	"api_callback":api,
-	"upload_path":upload_path,
-	"upload_callback":uploaded
+	"api_callback":api.process,
+	"upload_path":api.upload_path,
+	"upload_callback":api.uploaded
 }) ;
 
-//API implementation
-function api(q,cb) {
-	var ret ;
-	switch(q.GET.cmd) {
-		case "saveinfo":
-			if(q.POST.fname) {
-				var fn = upload_path(q.POST)+".json" ;
-				fs.writeFile(fn,JSON.stringify(q.POST),function(err){
-					console.log("info saved" ) ;
-					cb({"stat":0}) ;
-				}) ;
-			}
-			break ;
-		case "list":
-			var dir = __dirname+"/"+updir ;
-			fs.readdir(dir, function(err,data) {
-				ret = [] ;
-				data.forEach(function(f) {
-					if(f.substr(0,1)==".") return ;
-					if(f.match(/json$/)) {
-						ret.push(JSON.parse(fs.readFileSync(dir+"/"+f))) ; 
-					}
-				})
-				cb(ret) ;
-			})
-			break ;
-		default:
-			ret = {"stat":-1} ;
-			cb(ret) ;
-	}
-}
 
-//return upload file path
-var updir = "../client/updata" ;
-function upload_path(q) {
-	return __dirname+"/"+updir+"/"+q.fname ;
-}
-//upload finished
-function uploaded(q,cb) {
-	cb({"stat":0,"file":updir+"/"+q.GET.fname }) ;
-}
+
