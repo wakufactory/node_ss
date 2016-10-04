@@ -14,10 +14,23 @@ http.createServer((req, res) => {
 	log(d.toLocaleString()+" "+req.url) ;
 	let url_parts = url.parse(req.url,true);
 	let query = url_parts.query ;
+	let cookie = {} ;
+	if(req.headers.cookie) {
+		req.headers.cookie.split(";").forEach(function(e) {
+			var a = /(.+)=(.+)/.exec(e) ;
+			if(a.length==3) cookie[a[1]] = a[2]  ;	
+		}) ;
+		console.log(cookie) ;
+	}
 
 	//return response JSON
-	function retresp(res,data) {
+	function retresp(res,data,cookie) {
 		let r = JSON.stringify(data) ;
+		if(cookie) {
+			let c = [] ;
+			for(let i in cookie) c.push( i+"="+cookie[i] );
+			res.setHeader("Set-Cookie",c.join(";")) ;
+		}
 		res.writeHead(200, {'Content-Type':'text/json;charset="UTF-8"',
 			"Content-Length":Buffer.byteLength(r, 'utf-8')});
 		res.end(r);			
@@ -28,8 +41,8 @@ http.createServer((req, res) => {
 		log(query) ;
 		//GET
 		if(req.method=='GET') {
-			opt.api_callback({"GET":query},(ret) => {
-				retresp(res,ret) ;	
+			opt.api_callback({"GET":query,"cookie":cookie},(ret,cookie) => {
+				retresp(res,ret,cookie) ;	
 			}) ;
 		//POST
 		} else if(req.method=='POST') {
@@ -42,8 +55,8 @@ http.createServer((req, res) => {
 				log("post end") ;
 				let p = JSON.parse(data);
 				log(p) ; 
-				opt.api_callback({"POST":p,"GET":query},(ret)=> {
-					retresp(res,ret);
+				opt.api_callback({"POST":p,"GET":query,"cookie":cookie},(ret,cookie)=> {
+					retresp(res,ret,cookie);
 				})
 			})				
 		}

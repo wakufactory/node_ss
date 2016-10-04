@@ -2,13 +2,16 @@
 var fs = require('fs') ;
 exports.process = function(q,cb) {
 	var ret ;
+	var cookie = q.cookie ;
+	if(!cookie.ssid) cookie.ssid = new Date().getTime() ;
 	switch(q.GET.cmd) {
 		case "saveinfo":
 			if(q.POST.fname) {
 				var fn = exports.upload_path(q.POST)+".json" ;
+				q.POST.ssid = cookie.ssid ;
 				fs.writeFile(fn,JSON.stringify(q.POST),function(err){
 					console.log("info saved" ) ;
-					cb({"stat":0}) ;
+					cb({"stat":0},cookie) ;
 				}) ;
 			}
 			break ;
@@ -22,7 +25,7 @@ exports.process = function(q,cb) {
 						ret.push(JSON.parse(fs.readFileSync(dir+"/"+f))) ; 
 					}
 				})
-				cb(ret) ;
+				cb(ret,cookie) ;
 			})
 			break ;
 		default:
