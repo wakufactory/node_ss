@@ -17,10 +17,10 @@ http.createServer((req, res) => {
 	let cookie = {} ;
 	if(req.headers.cookie) {
 		req.headers.cookie.split(";").forEach(function(e) {
-			var a = /(.+)=(.+)/.exec(e) ;
-			if(a.length==3) cookie[a[1]] = a[2]  ;	
+			var a = /([^ ]+)=([^ ]+)/.exec(e) ;
+			if(a.length==3) cookie[a[1]] = decodeURIComponent(a[2])  ;	
 		}) ;
-		console.log(cookie) ;
+//		console.log(cookie) ;
 	}
 
 	//return response JSON
@@ -28,8 +28,8 @@ http.createServer((req, res) => {
 		let r = JSON.stringify(data) ;
 		if(cookie) {
 			let c = [] ;
-			for(let i in cookie) c.push( i+"="+cookie[i] );
-			res.setHeader("Set-Cookie",c.join(";")) ;
+			for(let i in cookie) c.push(i+"="+encodeURIComponent(cookie[i]))
+			res.setHeader("Set-Cookie",c) ;
 		}
 		res.writeHead(200, {'Content-Type':'text/json;charset="UTF-8"',
 			"Content-Length":Buffer.byteLength(r, 'utf-8')});
