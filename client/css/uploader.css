@@ -1,32 +1,42 @@
 html {
-	font-size:32px ;
+	font-size:2em ;
 	line-height:1em ;
 }
 body {
 	font-size:0.5rem ;
 	font-family:sans-serif ;
 }
-div {
+div,textarea,input {
 	box-sizing: border-box ;
+}
+button {
+	font-size:0.5rem ;
+}
+input,textarea {
+	font-size:0.5rem ;
+}
+select {
+	font-size:0.5rem ;
+	border:1px solid #888 ;	
 }
 #base {
 	display:flex ;
 }
-div.block {
+@media (max-width: 640px) {
+	body {
+		margin:2px ;
+		padding:0 ;
+	}
+	#base {
+		flex-direction:column ;
+	}
+}
+section.block {
 	width:calc(10rem - 4px);
 	height:16rem ;
 	overflow-y:scroll ;
 	overflow-x:hidden ;
 }
- @media (max-width: 640px) {
-	 body {
-		 margin:2px ;
-		 padding:0 ;
-	 }
-	 #base {
-		 flex-direction:column ;
-	 }
- }
 h1 {
 	font-size:0.8rem ;
 	height:1rem ;
@@ -54,7 +64,6 @@ h2 {
 	left:0 ;
 	max-width:calc(5rem - 4px) ;
 	max-height:calc(4rem - 4px) ;
-
 }
 #progbar {
 	height:0.3rem ;
@@ -67,29 +76,33 @@ h2 {
 	background-color:#888 ;
 	width:0% ;
 	height:100% ;
+	transition:width 0.2s linear ;
 }
 #list ul {
 	list-style:none ;
 	margin:0 ;
-	padding-left:0.25rem ;
+	padding-left:0.3rem ;
 }
-button {
-	font-size:0.5rem ;
+#list li a {
+	white-space:pre ;
 }
-input,select,textarea {
-	font-size:0.5rem ;
+#list li a:hover {
+	text-shadow:0 0 2px #ccc ;
+}
+button:hover {
+	text-shadow:0 0 3px #888 ;
 }
 form dd {
 	margin-left:3rem ;
 	margin-top:-1rem ;
 }
 input[type=text] {
-	width:6rem ;
+	width:calc(6rem - 6px) ;
 }
 input[type=file] {
 	width:9rem ;
 }
 textarea {
-	width:9rem ;
+	width:calc(9rem - 4px) ;
 	height:1rem ;
 }
