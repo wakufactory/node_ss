@@ -8,7 +8,12 @@
 function $$(q){	return document.querySelectorAll(q);}
 function $I(q){	return document.getElementById(q);}
 function NFC(name) { if(name.normalize) name =  name.normalize('NFC') ; return name ;}
-
+function eH(str) {
+	return str ;
+	return str.replace(/[&"<>]/g, function(match) {
+		return {'&':'&amp;','"':'&quot;','<':'&lt;','>':'&gt;'}[match]
+	});
+}
 onload = function() {
 	
 	getlist() ;
@@ -19,7 +24,7 @@ onload = function() {
 			var l = [] ;
 			for( var i in data) {
 				var f = data[i] ;
-				l.push( `<li><a href="updata/${f.fname}" target="_blank">${f.title} (${f.fname})</a></li>`) ;
+				l.push( `<li><a href="updata/${eH(f.fname)}" target="_blank">${eH(f.title)} (${eH(f.fname)})</a></li>`) ;
 			}
 			$I('list').innerHTML = `<ul class=list>${l.join("\n")}</ul>` ;
 		}).catch(function(err) {
