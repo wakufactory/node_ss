@@ -6,6 +6,8 @@
  - API returns JSON format
  - POST API also receives JSON format 
  - File upload API receives raw file data
+ - cookie support
+ - electron compatible
 
 ##require 
 
@@ -19,10 +21,17 @@
  - server/api_s.js : API implement
  - client/index.html : sample web app page
  - clinet/js/api.js : API call class 
- 
+ - electron : electron modules
+ - electron/js/api_e.js : API call for electron
+
 ##sample
 
 simple image uploader 
 
+###client-server model
  1. start server: node main.js
  1. open browser: http://localhost:8080/index.html
+ 
+###for electron
+ 1. start electron at electron folder 
+ 

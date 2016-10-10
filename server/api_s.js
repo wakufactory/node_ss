@@ -1,6 +1,6 @@
 //API implementation
 var fs = require('fs') ;
-exports.process = function(q,cb) {
+module.exports.process = function(q,cb) {
 	var ret ;
 	var ssid = q.cookie.ssid ;
 	if(!ssid) ssid = new Date().getTime() ;
@@ -36,11 +36,11 @@ exports.process = function(q,cb) {
 }
 //return upload file path
 var updir = "../client/updata" ;
-exports.upload_path = function(q) {
+module.exports.upload_path = function(q) {
 	return __dirname+"/"+updir+"/"+q.fname ;
 }
 
 //upload finished
-exports.uploaded = function(q,cb) {
+module.exports.uploaded = function(q,cb) {
 	cb({"stat":0,"file":updir+"/"+q.GET.fname }) ;
 }

@@ -1,0 +1,108 @@
+html {
+	font-size:2em ;
+	line-height:1em ;
+}
+body {
+	font-size:0.5rem ;
+	font-family:sans-serif ;
+}
+div,textarea,input {
+	box-sizing: border-box ;
+}
+button {
+	font-size:0.5rem ;
+}
+input,textarea {
+	font-size:0.5rem ;
+}
+select {
+	font-size:0.5rem ;
+	border:1px solid #888 ;	
+}
+#base {
+	display:flex ;
+}
+@media (max-width: 640px) {
+	body {
+		margin:2px ;
+		padding:0 ;
+	}
+	#base {
+		flex-direction:column ;
+	}
+}
+section.block {
+	width:calc(10rem - 4px);
+	height:16rem ;
+	overflow-y:scroll ;
+	overflow-x:hidden ;
+}
+h1 {
+	font-size:0.8rem ;
+	height:1rem ;
+	margin:0.5rem 0 ;
+}
+h2 {
+	font-size:0.5rem ;
+	height:1rem ;
+	margin:0.25rem 0 ;
+}
+#droparea {
+	position:relative ;
+	width:5rem ;
+	height:4rem;
+	border:2px solid black ;
+	text-align:center ;
+	line-height:4rem ;
+	margin-left:2rem ;
+}
+#droparea[data-over="1"] {
+	border:2px solid red ;
+}
+#imgpv {
+	position:absolute ;
+	left:0 ;
+	max-width:calc(5rem - 4px) ;
+	max-height:calc(4rem - 4px) ;
+}
+#progbar {
+	height:0.3rem ;
+	width:6rem ;
+	border:1px solid black ;
+	margin-left:3rem ;
+	margin-top:calc(-1rem + 0.3rem) ;
+}
+#progbar div {
+	background-color:#888 ;
+	width:0% ;
+	height:100% ;
+	transition:width 0.2s linear ;
+}
+#list ul {
+	list-style:none ;
+	margin:0 ;
+	padding-left:0.3rem ;
+}
+#list li a {
+	white-space:pre ;
+}
+#list li a:hover {
+	text-shadow:0 0 2px #ccc ;
+}
+button:hover {
+	text-shadow:0 0 3px #888 ;
+}
+form dd {
+	margin-left:3rem ;
+	margin-top:-1rem ;
+}
+input[type=text] {
+	width:calc(6rem - 6px) ;
+}
+input[type=file] {
+	width:9rem ;
+}
+textarea {
+	width:calc(9rem - 4px) ;
+	height:1rem ;
+}
