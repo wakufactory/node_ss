@@ -88,9 +88,18 @@ http.createServer((req, res) => {
 				let mime ='text/html;charset="UTF-8"';
 				if(mimes[ext]) mime = mimes[ext] ;
 				res.writeHead(200, {'Content-Type': mime,'Cache-Control':"public"});	
-				fs.createReadStream(fn).on('error',()=>{
+				var rs = fs.createReadStream(fn).on('error',()=>{
 					res.end("error");	
-				}).pipe(res);
+				});
+				if(opt.dispatch && opt.dispatch[pn]) {
+					log("dispatch "+pn) ;
+					var data = [] ;
+					rs.on("data",(d)=>{data.push(d);}).
+					on("end",()=>{
+						var ret = opt.dispatch[pn](query,data.join("") ) ;
+						res.end(ret) ;
+					})
+				} else rs.pipe(res);
 			}
 		})		
 	}
