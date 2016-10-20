@@ -18,14 +18,16 @@ module.exports.process = function(q,cb) {
 			break ;
 		case "list":
 			var dir = __dirname+"/"+updir ;
+			console.log(dir) ;
 			fs.readdir(dir, function(err,data) {
 				ret = [] ;
-				data.forEach(function(f) {
-					if(f.substr(0,1)==".") return ;
-					if(f.match(/json$/)) {
-						ret.push(JSON.parse(fs.readFileSync(dir+"/"+f))) ; 
-					}
-				})
+				if(data)
+					data.forEach(function(f) {
+						if(f.substr(0,1)==".") return ;
+						if(f.match(/json$/)) {
+							ret.push(JSON.parse(fs.readFileSync(dir+"/"+f))) ; 
+						}
+					})
 				cb(ret,{ssid:ssid}) ;
 			})
 			break ;
