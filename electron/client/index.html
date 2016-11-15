@@ -22,6 +22,13 @@ onload = function() {
 				l.push( `<li><a href="updata/${eH(f.fname)}" target="_blank">${eH(f.title)} (${eH(f.fname)})</a></li>`) ;
 			}
 			$I('list').innerHTML = `<ul class=list>${l.join("\n")}</ul>` ;
+			$I('list').querySelectorAll("li a").forEach(function(t) {
+					t.addEventListener('click',function(e) {//
+						console.log(e.target.href) ;
+						$I('if').src = e.target.href ;
+						e.preventDefault() ;
+					}) ;
+			});
 		}).catch(function(err) {
 			console.log(err) ;
 		})
@@ -86,6 +93,12 @@ onload = function() {
 }
 </script>
 <link rel=stylesheet href="css/uploader.css"/>
+<style>
+#if {
+	width:9rem ;
+	height:8rem ;
+}
+</style>
 <body>
 <div id=base>
 <section class=block id=left>
@@ -109,6 +122,7 @@ description:<br/>
 <button id=send>SEND</button><div id=progbar><div></div></div>
 </section>
 <section class=block id=right>
+<iframe id=if></iframe>
 <h2>upload image list</h2>
 <div id=list></div>
 </section>
