@@ -22,7 +22,7 @@
  - client/index.html : sample web app page
  - clinet/js/api.js : API call class 
  - electron : electron modules
- - electron/js/api_e.js : API call for electron
+ - electron/js/api.js : API call for electron
 
 ##sample
 
