@@ -22,6 +22,14 @@ onload = function() {
 				l.push( `<li><a href="updata/${eH(f.fname)}" target="_blank">${eH(f.title)} (${eH(f.fname)})</a></li>`) ;
 			}
 			$I('list').innerHTML = `<ul class=list>${l.join("\n")}</ul>` ;
+			if(process) {
+				$I('list').querySelectorAll("li a").forEach(function(t) {
+						t.addEventListener('click',function(e) {//
+							API.open_window(e.target.href) ;
+							e.preventDefault() ;
+						}) ;
+				});
+			}
 		}).catch(function(err) {
 			console.log(err) ;
 		})
