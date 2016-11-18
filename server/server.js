@@ -36,44 +36,58 @@ http.createServer((req, res) => {
 		res.end(r);			
 	}
 //API process
-	if(url_parts.pathname=="/api/") {
+	if(url_parts.pathname.substr(0,5)=="/api/") {
 		log("api") ;
 		log(query) ;
 		//GET
 		if(req.method=='GET') {
-			opt.api_callback({"GET":query,"cookie":cookie},(ret,cookie) => {
-				retresp(res,ret,cookie) ;	
-			}) ;
+			try {
+				opt.api_callback({"path":url_parts.pathname,"GET":query,"cookie":cookie},(ret,cookie) => {
+					retresp(res,ret,cookie) ;	
+				}) ;
+			} catch(err) {
+				console.log(err) ;
+				retresp(res,{"api_error":err.toString()},cookie) ;
+			}
 		//POST
 		} else if(req.method=='POST') {
-			let data = "" ;
-			req.on("readable",()=> {
-				let d = req.read() ;
-				if(d!=null) data += d.toString() ;
-			});
-			req.on("end",()=>{
-				log("post end") ;
-				let p = JSON.parse(data);
-				log(p) ; 
-				opt.api_callback({"POST":p,"GET":query,"cookie":cookie},(ret,cookie)=> {
-					retresp(res,ret,cookie);
-				})
-			})				
+			try {
+				let data = "" ;
+				req.on("readable",()=> {
+					let d = req.read() ;
+					if(d!=null) data += d.toString() ;
+				});
+				req.on("end",()=>{
+					log("post end") ;
+					let p = JSON.parse(data);
+					log(p) ; 
+					opt.api_callback({"path":url_parts.pathname,"POST":p,"GET":query,"cookie":cookie},(ret,cookie)=> {
+						retresp(res,ret,cookie);
+					})
+				})	
+			} catch(err) {
+				console.log(err) ;
+				retresp(res,{"api_error":err.toString()},cookie) ;
+			}			
 		}
 	//file upload API
 	} else if(req.method=='POST' && url_parts.pathname=="/upload/"){
-		
-		let fn = opt.upload_path(query) ;
-		let fp = fs.createWriteStream(fn) ;
-		req.pipe(fp) ;
-		log("save to "+fn) ;
-
-		req.on("end",()=>{
-			log("upload end") ;
-			opt.upload_callback({"GET":query},(ret)=>{
-				retresp(res,ret) ;				
+		try {
+			let fn = opt.upload_path(query) ;
+			let fp = fs.createWriteStream(fn) ;
+			req.pipe(fp) ;
+			log("save to "+fn) ;
+	
+			req.on("end",()=>{
+				log("upload end") ;
+				opt.upload_callback({"GET":query},(ret)=>{
+					retresp(res,ret) ;				
+				})
 			})
-		})
+		} catch(err) {
+			console.log(err) ;
+			retresp(res,{"api_error":err.toString()},cookie) ;
+		}
 //file transfer
 	} else {
 		var pn = decodeURI(url_parts.pathname).replace("..","") ;

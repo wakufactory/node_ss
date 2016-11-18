@@ -18,7 +18,6 @@ module.exports.process = function(q,cb) {
 			break ;
 		case "list":
 			var dir = __dirname+"/"+updir ;
-			console.log(dir) ;
 			fs.readdir(dir, function(err,data) {
 				ret = [] ;
 				if(data)
